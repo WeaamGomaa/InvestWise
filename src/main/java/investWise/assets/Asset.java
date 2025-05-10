@@ -1,3 +1,6 @@
+package main.java.investWise.assets;
+
+import main.java.investWise.observers.Observer;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +21,7 @@ public class Asset {
 
     @Override
     public String toString() {
-        return "Asset Name: " + Name
+        return "main.java.investWise.assets.Asset Name: " + Name
                 + " | Type: " + type
                 + " | Value: $" + value
                 + " | Quantity: " + quantity
