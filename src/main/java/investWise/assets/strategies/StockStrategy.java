@@ -6,8 +6,7 @@ public class StockStrategy implements InvestmentStrategy {
     @Override
     public double calculateValue(Asset asset){
         System.out.println("Stocks calculating value....");
-        double value = asset.quantity * asset.purchasePrice;
-        return value;
+        return asset.quantity * asset.purchasePrice;
     }
 
     @Override

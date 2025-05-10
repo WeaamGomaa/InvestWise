@@ -1,9 +1,9 @@
 package main.java.investWise;
 
-import main.java.investWise.assets.Asset;
+//import main.java.investWise.assets.Asset;
 import main.java.investWise.assets.AssetManager;
-import main.java.investWise.observers.Observer;
-import main.java.investWise.observers.Dashboard;
+//import main.java.investWise.observers.Observer;
+//import main.java.investWise.observers.Dashboard;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -14,7 +14,7 @@ import java.util.HashMap;
 
 
 public class MenuHandler {
-    private AssetManager manager;
+    private AssetManager manager = new AssetManager();
     private double promptForDouble(String message){
         Scanner scanner = new Scanner(System.in);
 

@@ -3,7 +3,7 @@ package main.java.investWise.observers;
 import main.java.investWise.assets.Asset;
 
 public class Dashboard implements Observer {
-    protected Asset asset;
+    //protected Asset asset;
 
 //    public main.java.investWise.observers.Dashboard(main.java.investWise.assets.Asset asset){
 //        this.asset = asset;
@@ -11,6 +11,6 @@ public class Dashboard implements Observer {
 //    }
     @Override
     public void update(Asset asset){
-        System.out.println("[UPDATE] " + asset.toString());
+        System.out.println("UPDATE " + asset.toString());
     }
 }

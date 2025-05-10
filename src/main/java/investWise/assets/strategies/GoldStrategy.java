@@ -6,8 +6,7 @@ public class GoldStrategy implements InvestmentStrategy {
     @Override
     public double calculateValue(Asset asset){
         System.out.println("Gold calculating value....");
-        double value = asset.quantity * asset.purchasePrice;
-        return value;
+        return asset.quantity * asset.purchasePrice;
     }
 
     @Override

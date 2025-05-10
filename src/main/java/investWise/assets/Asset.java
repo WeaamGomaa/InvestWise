@@ -1,12 +1,12 @@
 package main.java.investWise.assets;
-
+//
 import main.java.investWise.observers.Observer;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Asset {
-    private List<Observer> observers = new ArrayList();
+    private List<Observer> observers = new ArrayList<>();
     public String Name;
     public String type;
     public double value;

@@ -6,8 +6,7 @@ public class RealEstateStrategy implements InvestmentStrategy {
     @Override
     public double calculateValue(Asset asset){
         System.out.println("Real Estate calculating value....");
-        double value = asset.quantity * asset.purchasePrice;
-        return value;
+        return asset.quantity * asset.purchasePrice;
     }
 
     @Override
