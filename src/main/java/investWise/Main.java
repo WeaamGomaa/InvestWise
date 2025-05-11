@@ -6,10 +6,12 @@ package main.java.investWise;
 //import main.java.investWise.observers.Dashboard;
 //import main.java.investWise.MenuHandler;
 
+import main.java.investWise.assets.AssetManager;
+
 public class Main {
     public static void main(String[] args) {
-        //
-        MenuHandler showMenu = new MenuHandler();
-        showMenu.showMainMenu();
+        AssetManager manager = new AssetManager();
+        MenuHandler menuHandler = new MenuHandler();
+        menuHandler.showMainMenu(manager);
     }
 }

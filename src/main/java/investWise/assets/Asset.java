@@ -1,11 +1,14 @@
 package main.java.investWise.assets;
-//
+
+import java.io.Serializable;
 import main.java.investWise.observers.Observer;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Asset {
+public class Asset implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private List<Observer> observers = new ArrayList<>();
     public String Name;
     public String type;
@@ -21,7 +24,7 @@ public class Asset {
 
     @Override
     public String toString() {
-        return "main.java.investWise.assets.Asset Name: " + Name
+        return "Asset Name: " + Name
                 + " | Type: " + type
                 + " | Value: $" + value
                 + " | Quantity: " + quantity
@@ -50,8 +53,12 @@ public class Asset {
         this.observers.add(observer);
     }
     public void notifyObserver(){
-        for(Observer observer : this.observers) {
-            observer.update(this);
+        if (observers != null) {  // Safety check
+            for (Observer observer : observers) {
+                if (observer != null) {  // Critical!
+                    observer.update(this);
+                }
+            }
         }
     }
 }

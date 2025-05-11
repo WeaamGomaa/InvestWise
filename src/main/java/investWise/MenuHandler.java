@@ -50,7 +50,7 @@ public class MenuHandler {
         }
     }
 
-    public void showMainMenu(){
+    public void showMainMenu(AssetManager manager){
         System.out.println("***********Welcome At InvestWise Program***********");
         System.out.println("       A Place Where You Can Invest Easily!");
         System.out.println("***************************************************");
@@ -59,15 +59,30 @@ public class MenuHandler {
                 "\n3- Risk & Allocation" +
                 "\n4- Zakat & Compliance" +
                 "\n5- Reports" +
-                "\n6- Exit");
+                "\n6- Save Portfolio" +
+                "\n7- Load Portfolio" +
+                "\n8- Exit");
         System.out.println("Enter your choice please: ");
         Scanner userInput = new Scanner(System.in);
         int mainMenuChoice = userInput.nextInt();
+        userInput.nextLine();
 
         switch (mainMenuChoice){
             case 1:
                 showAssetManagementMenu(manager);
                 break;
+            case 6:
+                System.out.println("Enter filename to save: ");
+                manager.savePortfolio(userInput.nextLine());
+                break;
+            case 7:
+                System.out.println("Enter filename to load: ");
+                manager = AssetManager.loadPortfolio(userInput.nextLine());
+                System.out.println(manager);
+                break;
+            case 8:
+                System.out.println("Thank you for using InvestWise!");
+                return;
             default:
                 System.out.println("Invalid choice");
         }
@@ -97,7 +112,9 @@ public class MenuHandler {
                     displayAssetsList(manager);
                     break;
                 case 4:
-                    return;
+                    showMainMenu(manager);
+                    break;
+                    //return;
                 default:
                     System.out.println("Invalid option, please try again.");
             }
