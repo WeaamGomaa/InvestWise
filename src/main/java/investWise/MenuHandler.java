@@ -79,8 +79,8 @@ public class MenuHandler {
 //    }
 
     public void showMainMenu(AssetManager manager){
-        System.out.println("***********Welcome At InvestWise Program***********");
-        System.out.println("       A Place Where You Can Invest Easily!");
+        System.out.println("********** Welcome to InvestWise Program **********");
+        System.out.println("       A Place Where Investing Couldn't Be Easier!");
         System.out.println("***************************************************");
 
         while(true){
