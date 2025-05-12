@@ -42,7 +42,7 @@ public class AssetManager implements Serializable {
     //*************Add Asset****************
     public void addAsset(String assetName, String assetType, HashMap<String, Object> assetDetails){
         if(assetDetails == null || assetName.isEmpty() || assetType.isEmpty()){
-            System.out.println("main.java.investWise.assets.Asset ID, type, and details are required.");
+            System.out.println("Asset name, type, and details are required.");
         }
 
         //************Select Strategy*************
@@ -63,9 +63,14 @@ public class AssetManager implements Serializable {
 
         //*********Create Asset Object***********
         Asset newAsset = new Asset(assetName,assetType);
+
         newAsset.setQuantity((int) assetDetails.get("quantity"));
         newAsset.setPurchaseDate((LocalDate) assetDetails.get("purchaseDate"));
         newAsset.setPurchasePrice((double) assetDetails.get("purchasePrice"));
+
+        //Record initial values
+//        newAsset.recordChange("Initial_quantity", null, assetDetails.get("quantity"));
+//        newAsset.recordChange("Initial_price", null, assetDetails.get("purchasePrice"));
 
         //************Calculate Value and Check Halal Status************
         double value = strategy.calculateValue(newAsset);
@@ -76,8 +81,12 @@ public class AssetManager implements Serializable {
         newAsset.addObserver(dashboard);
         newAsset.notifyObserver();
 
+        // add to portfolio
         assets.add(newAsset);
+        System.out.println("Asset created. History:");
+        newAsset.getUpdateHistory().forEach(System.out::println);
     }
+
 
     //***********Edit Asset**************
     public void editAsset(int index, String newName,
@@ -105,6 +114,11 @@ public class AssetManager implements Serializable {
             asset.setPurchaseDate(newDate);
         }
 
+//        asset.setName(newName);         // Auto-records if changed
+//        asset.setQuantity(newQuantity);      // (Modify setter like setName)
+//        asset.setPurchasePrice(newPrice);
+//        asset.setPurchaseDate(newDate);
+
         // Recalculate and notify
         asset.setCurrentValue(strategy.calculateValue(asset));
         asset.notifyObserver();
@@ -125,6 +139,8 @@ public class AssetManager implements Serializable {
             Scanner scanner =  new Scanner(System.in);
             String confirmation = scanner.nextLine();
             if(confirmation.equals("y") || confirmation.equals("Y")){
+                Asset assetToRemove = assets.get(index - 1);
+                assetToRemove.recordChange("Removed", assetToRemove.toString(), null);
                 assets.remove(index - 1);
                 return true;
             }

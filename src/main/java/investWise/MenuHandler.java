@@ -1,6 +1,7 @@
 package main.java.investWise;
 
 //import main.java.investWise.assets.Asset;
+import main.java.investWise.assets.Asset;
 import main.java.investWise.assets.AssetManager;
 //import main.java.investWise.observers.Observer;
 //import main.java.investWise.observers.Dashboard;
@@ -44,48 +45,82 @@ public class MenuHandler {
                 System.out.println(message + "[YYYY-MM-DD]: ");
                 String input = scanner.nextLine().trim();
                 return LocalDate.parse(input, dateFormat);
+
             } catch (DateTimeParseException e){
                 System.out.println("Invalid date format, please use YYYY-MM-DD");
             }
         }
     }
 
+    private int promptForInt(String message, int min, int max) {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            try {
+                System.out.print(message);
+                int input = scanner.nextInt();
+                scanner.nextLine();
+                if (input >= min && input <= max) {
+                    return input;
+                } else if(input == 0) {
+                    System.out.println("Editing canceled!");
+                    return input;
+                } else{
+                    System.out.printf("Input must be between %d and %d.%n", min, max);
+                }
+            } catch (InputMismatchException e) {
+                scanner.nextLine();  // Clear invalid input
+                System.out.println("Invalid input, please enter a correct number.");
+            }
+        }
+    }
+
+//    private String promptForString(String message, boolean allowEmpty){
+//
+//    }
+
     public void showMainMenu(AssetManager manager){
         System.out.println("***********Welcome At InvestWise Program***********");
         System.out.println("       A Place Where You Can Invest Easily!");
         System.out.println("***************************************************");
-        System.out.println("1- Asset Management" +
-                "\n2- Financial Goals" +
-                "\n3- Risk & Allocation" +
-                "\n4- Zakat & Compliance" +
-                "\n5- Reports" +
-                "\n6- Save Portfolio" +
-                "\n7- Load Portfolio" +
-                "\n8- Exit");
-        System.out.println("Enter your choice please: ");
-        Scanner userInput = new Scanner(System.in);
-        int mainMenuChoice = userInput.nextInt();
-        userInput.nextLine();
 
-        switch (mainMenuChoice){
-            case 1:
-                showAssetManagementMenu(manager);
+        while(true){
+            System.out.println("1- Asset Management" +
+                    "\n2- Financial Goals" +
+                    "\n3- Risk & Allocation" +
+                    "\n4- Zakat & Compliance" +
+                    "\n5- Reports" +
+                    "\n6- Save Portfolio" +
+                    "\n7- Load Portfolio" +
+                    "\n8- Exit");
+            System.out.println("Enter your choice please: ");
+            Scanner userInput = new Scanner(System.in);
+            int mainMenuChoice = userInput.nextInt();
+            userInput.nextLine();
+
+            switch (mainMenuChoice){
+                case 1:
+                    showAssetManagementMenu(manager);
+                    break;
+                case 6:
+                    System.out.println("Enter filename to save: ");
+                    manager.savePortfolio(userInput.nextLine());
+                    break;
+                case 7:
+                    System.out.println("Enter filename to load: ");
+                    manager = AssetManager.loadPortfolio(userInput.nextLine());
+                    printPortfolioContents(manager);
+                    break;
+                case 8:
+                    System.out.println("Thank you for using InvestWise!");
+                    continue;
+                default:
+                    System.out.println("Invalid choice");
+            }
+            if(mainMenuChoice == 8){
                 break;
-            case 6:
-                System.out.println("Enter filename to save: ");
-                manager.savePortfolio(userInput.nextLine());
-                break;
-            case 7:
-                System.out.println("Enter filename to load: ");
-                manager = AssetManager.loadPortfolio(userInput.nextLine());
-                System.out.println(manager);
-                break;
-            case 8:
-                System.out.println("Thank you for using InvestWise!");
-                return;
-            default:
-                System.out.println("Invalid choice");
+            }
         }
+
 
     }
     public void showAssetManagementMenu(AssetManager manager){
@@ -94,9 +129,10 @@ public class MenuHandler {
         while (true){
             System.out.println("*****ASSET MANAGEMENT PAGE*****");
             System.out.println("1- Add Asset" +
-                    "\n2- Edit/Remove Asset" +
-                    "\n3- Assets List" +
-                    "\n4- Return to Main Menu");
+                    "\n2- Edit Asset" +
+                    "\n3- Remove Asset" +
+                    "\n4- Assets List" +
+                    "\n5- Return to Main Menu");
             System.out.println("Enter your choice please: ");
             int subMenuChoice = scanner.nextInt();
             scanner.nextLine(); // Consume newline
@@ -106,12 +142,15 @@ public class MenuHandler {
                     handleAddAsset(manager);
                     break;
                 case 2:
-                    handleEditRemoveAsset(manager);
+                    handleEditAsset(manager);
                     break;
                 case 3:
-                    displayAssetsList(manager);
+                    handleRemoveAsset(manager);
                     break;
                 case 4:
+                    displayAssetsList(manager);
+                    break;
+                case 5:
                     showMainMenu(manager);
                     break;
                     //return;
@@ -165,10 +204,105 @@ public class MenuHandler {
         System.out.println("Asset added successfully!");
         manager.printAllAssets();
     }
-    private void handleEditRemoveAsset(AssetManager manager){
 
+    private void handleEditAsset(AssetManager manager){
+        Scanner scanner = new Scanner(System.in);
+        if(manager.getAssets().isEmpty()){
+            System.out.println("No assets to edit");
+        }
+
+        //List assets
+        printPortfolioContents(manager);
+
+        //Select asset
+        int index = promptForInt("Enter asset number to edit (0 to cancel)", 1, manager.getAssets().size());
+        if (index - 1 == -1){
+            return;
+        }
+
+        //Get the new values
+        System.out.println("New name: ");
+        String newName = scanner.nextLine();
+        scanner.nextLine();
+
+        System.out.println("New quantity (Enter 0 to keep): ");
+        int newQuantity = scanner.nextInt();
+        scanner.nextLine();
+
+//        double newPrice = promptForDouble("New price (Enter 0 to keep): ");
+        System.out.println("New price (Enter 0 to keep): ");
+        double newPrice = scanner.nextDouble();
+        scanner.nextLine();
+
+        LocalDate newDate = promptForDate("New date [YYYY-MM-DD]: ");
+
+
+        //Call AssetManager
+        manager.editAsset(
+                index,
+                newName.isEmpty() ? manager.getAssets().get(index - 1).Name : newName,
+                newQuantity == 0 ? -1 : newQuantity,
+                newPrice == 0 ? -1 : newPrice,
+                newDate);
+        System.out.println("Asset updated!");
+
+        showHistory(manager);
     }
+
+    private void handleRemoveAsset(AssetManager manager){
+        if (manager.getAssets().isEmpty()) {
+            System.out.println("No assets to remove!");
+        }
+
+        //List assets
+        printPortfolioContents(manager);
+
+        //Select asset
+        int index = promptForInt("Enter asset number to remove (0 to cancel)", 1, manager.getAssets().size());
+        if (index - 1 == -1){
+            return;
+        }
+
+        //remove asset
+        if (manager.removeAsset(index)){
+            System.out.println("Asset removed!");
+        }
+        else{
+            System.out.println("Asset not removed!");
+        }
+
+        showHistory(manager);
+    }
+
     private void displayAssetsList(AssetManager manager){
         manager.printAllAssets();
+    }
+
+    public void printPortfolioContents(AssetManager manager){
+        System.out.println("\n************ PORTFOLIO CONTENTS ************");
+
+        if(manager.getAssets().isEmpty()){
+            System.out.println("There are no assets in portfolio");
+        }
+
+        // print each asset with index number
+        int index = 1;
+        for(Asset asset : manager.getAssets()){
+            System.out.printf("%d. %s\n", index++, asset.toString());
+            System.out.printf(" - Current Value: $%.2f\n", manager.getStrategy().calculateValue(asset));
+            System.out.printf(" - Halal Status: %s\n", manager.checkHalal(asset));
+        }
+        System.out.println("*********************************************");
+    }
+
+    private void showHistory(AssetManager manager) {
+        int index = promptForInt("View history for asset (1-" + (manager.getAssets().size()) + "): ",
+                1, manager.getAssets().size());
+        if (manager.getAssets().get(index - 1) == null || manager.getAssets().get(index -1).getUpdateHistory() == null) {
+            System.out.println("No history available for this asset");
+            return;
+        }
+        System.out.println("\n=== Update History ===");
+        manager.getAssets().get(index - 1).getUpdateHistory().forEach(System.out::println);
     }
 }
