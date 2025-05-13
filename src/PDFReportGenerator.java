@@ -1,4 +1,50 @@
-package PACKAGE_NAME;
+package main.java.investWise;
 
-public class PDFReportGenerator {
+import main.java.investWise.assets.*;
+import main.java.investWise.assets.strategies.*;
+import java.time.LocalDate;
+import java.util.List;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class PDFReportGenerator extends ReportGenerator {
+
+    public PDFReportGenerator(List<Asset> assets, String filename) {
+        super(assets, filename);
+    }
+
+    @Override
+    public String generateReport() {
+        StringBuilder report = new StringBuilder();
+        report.append("========================================\n");
+        report.append("        Investment Portfolio Report       \n");
+        report.append("========================================\n");
+        report.append("Generated on: ").append(LocalDate.now()).append("\n\n");
+        report.append(String.format("%-20s %-10s %-8s %-15s %-15s %-15s\n",
+                "Asset", "Type", "Qty", "Purchase Price", "Current Value", "Status"));
+        report.append("---------------------------------------------------------------------------\n");
+
+        double totalValue = 0;
+        for (Asset asset : assets) {
+            InvestmentStrategy strategy = getStrategy(asset.type);
+            double assetValue = strategy.calculateValue(asset);
+            boolean isHalal = strategy.isHalal(asset);
+            totalValue += assetValue;
+            report.append(String.format("%-20s %-10s %-8d $%-14.2f $%-14.2f %-15s\n",
+                    asset.Name, asset.type, asset.quantity, asset.purchasePrice,
+                    assetValue, isHalal ? "Halal Certified" : "Review Needed"));
+        }
+
+        report.append("---------------------------------------------------------------------------\n");
+        report.append(String.format("%-63s $%.2f\n", "Total Portfolio Value:", totalValue));
+        report.append("========================================\n");
+
+        try (FileWriter writer = new FileWriter(outputPath)) {
+            writer.write(report.toString());
+        } catch (IOException e) {
+            throw new RuntimeException("Error writing to file: " + e.getMessage());
+        }
+
+        return "PDF report generated at: " + outputPath;
+    }
 }
