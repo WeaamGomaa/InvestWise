@@ -1,6 +1,9 @@
 package main.java.investWise;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import main.java.investWise.assets.Asset;
+import main.java.investWise.assets.AssetManager;
 
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -8,7 +11,9 @@ public class User implements Serializable {
     String email;
     String username;
     String password;
-     private ArrayList<Account> accounts;
+    private ArrayList<Account> accounts;
+    private ArrayList<Asset> assets;
+    public AssetManager assetManager;
 
     public User(String name, String email, String username, String password) {
         this.name = name;
@@ -16,6 +21,8 @@ public class User implements Serializable {
         this.username = username;
         this.password = password;
         this.accounts = new ArrayList<>();
+        this.assets = new ArrayList<>();
+        this.assetManager = new AssetManager(this.assets);
     }
 
     public boolean login(String inputPassword) {
@@ -37,7 +44,13 @@ public class User implements Serializable {
     public String getEmail() {
         return email;
     }
+
     public ArrayList<Account> getAccounts() {
         return accounts;
     }
+
+    public ArrayList<Asset> getAssets() {
+        return assets;
+    }
+
 }
