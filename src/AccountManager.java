@@ -1,15 +1,16 @@
 
- package zakat_bank.java;
- import java.util.*;
+package main.java.investWise;
+import java.util.*;
 
 
- public class AccountManager {
 
-     private UserService userService;
+public class AccountManager {
 
-     public AccountManager() {
-         this.userService = new UserService();
-     }
+    private UserService userService;
+
+    public AccountManager() {
+        this.userService = new UserService();
+    }
 
 
     public boolean verifyOtp(String username,String bankName  ){
@@ -39,22 +40,23 @@
 
     }
     public void linkAccount(String username,String bankName ,String accountNum,String type){
+        Account account;
         if (type.equals("bankAccount")){
-            Account account = new Account(accountNum,type,bankName);
-            System.out.println("bankaccount is linked successfully");
+            account = new Account(accountNum,type,bankName);
+            System.out.println("bank account is linked successfully");
 
         }
         else{
-            Account account = new Account(accountNum,type);
+            account = new Account(accountNum,type);
             System.out.println("stock market account is linked successfully");
         }
-         List<User> users = UserService.getAllUsers();
-        User user = users.getUser(username);
+
+        User user = userService.getUser(username);
         if (user == null) {
             System.out.println("User not found!");
             return;
         }
         user.getAccounts().add(account);
-
+        System.out.println("Account linked to user: " + username);
     }
 }
