@@ -25,6 +25,11 @@ public class AssetManager implements Serializable {
         this.dashboard = new Dashboard();
     }
 
+    public AssetManager(ArrayList<Asset> assets) {
+        this.assets = assets;
+        this.dashboard = new Dashboard();
+    }
+
     private void ensureObserverInitialized() {
         if (dashboard == null) {
             dashboard = new Dashboard();
@@ -90,7 +95,7 @@ public class AssetManager implements Serializable {
 
     //***********Edit Asset**************
     public void editAsset(int index, String newName,
-    int newQuantity, double newPrice, LocalDate newDate){
+                          int newQuantity, double newPrice, LocalDate newDate){
         Asset asset = assets.get(index - 1);
 
         // Apply changes after checks
