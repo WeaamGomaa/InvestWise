@@ -38,13 +38,14 @@ public class UserService {
         return null;
     }
 
-    public void registerUser(String name, String email, String username, String password) {
+    public Boolean registerUser(String name, String email, String username, String password) {
         if (getUser(username) != null) {
             System.out.println("Username already exists!");
-            return;
+            return false;
         }
 
         users.add(User.register(name, email, username, password));
+        return true;
     }
 
     public User authenticate(String username, String password) {
