@@ -29,7 +29,7 @@ public class UserService {
         }
     }
 
-    private User getUser(String username) {
+     User getUser(String username) {
         for (User user : users) {
             if (user.getUsername().equals(username)) {
                 return user;
