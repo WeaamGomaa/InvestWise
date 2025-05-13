@@ -12,7 +12,6 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class MenuHandler {
-    private AssetManager manager = new AssetManager();
     private UserService userService = new UserService();
     private Scanner scanner = new Scanner(System.in);
     private User currentUser = null;
@@ -140,16 +139,15 @@ public class MenuHandler {
                     showAssetManagementMenu();
                     break;
                 case 5:
-                    ReportGenerator.showReportMenu(manager);
+                    ReportGenerator.showReportMenu(currentUser.assetManager);
                     break;
                 case 6:
                     System.out.print("Enter filename to save: ");
-                    manager.savePortfolio(scanner.nextLine());
+                    savePortfolio(scanner.nextLine());
                     break;
                 case 7:
                     System.out.print("Enter filename to load: ");
-                    manager = AssetManager.loadPortfolio(scanner.nextLine());
-                    printPortfolioContents();
+                    loadPortfolio(scanner.nextLine());
                     break;
                 case 8:
                     System.out.println("Logging out...");
@@ -227,25 +225,25 @@ public class MenuHandler {
         assetDetailsInput.put("purchaseDate", promptForDate("Purchase Date: "));
         assetDetailsInput.put("purchasePrice", promptForDouble("Purchase Price"));
 
-        manager.addAsset(assetNameInput, assetTypeInput, assetDetailsInput);
+        currentUser.assetManager.addAsset(assetNameInput, assetTypeInput, assetDetailsInput);
         System.out.println("Asset added successfully!");
         printAllAssets();
     }
 
     private void handleEditAsset() {
-        if (manager.getAssets().isEmpty()) {
+        if (currentUser.assetManager.getAssets().isEmpty()) {
             System.out.println("No assets to edit");
             return;
         }
 
         printPortfolioContents();
 
-        int index = promptForInt("Enter asset number to edit (0 to cancel)", 1, manager.getAssets().size());
+        int index = promptForInt("Enter asset number to edit (0 to cancel)", 1, currentUser.assetManager.getAssets().size());
         if (index == 0) {
             return;
         }
 
-        Asset assetToEdit = manager.getAssets().get(index - 1);
+        Asset assetToEdit = currentUser.assetManager.getAssets().get(index - 1);
 
         System.out.print("New name (leave empty to keep '" + assetToEdit.Name + "'): ");
         String newName = scanner.nextLine();
@@ -260,7 +258,7 @@ public class MenuHandler {
 
         LocalDate newDate = promptForDate("New purchase date (leave empty to keep '" + assetToEdit.purchaseDate + "') [YYYY-MM-DD]: ");
 
-        manager.editAsset(
+        currentUser.assetManager.editAsset(
                 index,
                 newName.isEmpty() ? assetToEdit.Name : newName,
                 newQuantity == 0 ? -1 : newQuantity,
@@ -272,23 +270,20 @@ public class MenuHandler {
     }
 
     private void handleRemoveAsset() {
-        if (manager.getAssets().isEmpty()) {
+        if (currentUser.assetManager.getAssets().isEmpty()) {
             System.out.println("No assets to remove!");
             return;
         }
 
         printPortfolioContents();
 
-        int index = promptForInt("Enter asset number to remove (0 to cancel)", 1, manager.getAssets().size());
+        int index = promptForInt("Enter asset number to remove (0 to cancel)", 1, currentUser.assetManager.getAssets().size());
         if (index == 0) {
             return;
         }
 
-        if (manager.removeAsset(index)) {
-            System.out.println("Asset removed!");
-        } else {
-            System.out.println("Asset not removed!");
-        }
+        currentUser.assetManager.removeAsset(index);
+        System.out.println("Asset removed!");
         showHistory(index - 1);
     }
 
@@ -298,25 +293,25 @@ public class MenuHandler {
 
     public void printPortfolioContents() {
         System.out.println("\n************ PORTFOLIO CONTENTS ************");
-        if (manager.getAssets().isEmpty()) {
+        if (currentUser.assetManager.getAssets().isEmpty()) {
             System.out.println("There are no assets in portfolio");
         }
         int index = 1;
-        for (Asset asset : manager.getAssets()) {
+        for (Asset asset : currentUser.assetManager.getAssets()) {
             System.out.printf("%d. %s\n", index++, asset.toString());
-            System.out.printf(" - Current Value: $%.2f\n", manager.getStrategy().calculateValue(asset));
-            System.out.printf(" - Halal Status: %s\n", manager.checkHalal(asset));
+            System.out.printf(" - Current Value: $%.2f\n", currentUser.assetManager.getStrategy().calculateValue(asset));
+            System.out.printf(" - Halal Status: %s\n", currentUser.assetManager.checkHalal(asset));
         }
         System.out.println("*********************************************");
     }
 
     private void printAllAssets() {
-        manager.printAllAssets();
+        currentUser.assetManager.printAllAssets();
     }
 
     private void showHistory(int assetIndex) {
-        if (assetIndex >= 0 && assetIndex < manager.getAssets().size()) {
-            Asset asset = manager.getAssets().get(assetIndex);
+        if (assetIndex >= 0 && assetIndex < currentUser.assetManager.getAssets().size()) {
+            Asset asset = currentUser.assetManager.getAssets().get(assetIndex);
             if (asset.getUpdateHistory() == null || asset.getUpdateHistory().isEmpty()) {
                 System.out.println("No history available for this asset");
                 return;
@@ -325,6 +320,18 @@ public class MenuHandler {
             asset.getUpdateHistory().forEach(System.out::println);
         } else {
             System.out.println("Invalid asset index.");
+        }
+    }
+
+    private void savePortfolio(String filename) {
+        PortfolioService.savePortfolio(currentUser, filename);
+    }
+
+    private void loadPortfolio(String filename) {
+        PortfolioService.loadPortfolio(currentUser, filename);
+        // After loading, ensure the AssetManager in currentUser is correctly initialized
+        if (currentUser != null) {
+            currentUser.assetManager = new AssetManager(currentUser.getAssets());
         }
     }
 }
