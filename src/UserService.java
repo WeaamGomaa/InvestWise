@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class UserService {
     private static final String FILENAME = "users_list.ser";
     private static final String DATA_FILE = "users.dat";
-    private List<User> users = new ArrayList<>();
+    private static List<User> users = new ArrayList<>();
 
     public UserService() {
         try (FileInputStream fis = new FileInputStream(FILENAME);
@@ -29,7 +29,7 @@ public class UserService {
         }
     }
 
-     User getUser(String username) {
+    public User getUser(String username) {
         for (User user : users) {
             if (user.getUsername().equals(username)) {
                 return user;
