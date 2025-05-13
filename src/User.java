@@ -8,12 +8,14 @@ public class User implements Serializable {
     String email;
     String username;
     String password;
+     private ArrayList<Account> accounts;
 
     public User(String name, String email, String username, String password) {
         this.name = name;
         this.email = email;
         this.username = username;
         this.password = password;
+        this.accounts = new ArrayList<>();
     }
 
     public boolean login(String inputPassword) {
@@ -34,5 +36,8 @@ public class User implements Serializable {
 
     public String getEmail() {
         return email;
+    }
+    public ArrayList<Account> getAccounts() {
+        return accounts;
     }
 }
