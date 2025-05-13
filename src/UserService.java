@@ -3,6 +3,8 @@ package main.java.investWise;
 import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
+import main.java.investWise.assets.Asset;
+import main.java.investWise.assets.AssetManager;
 
 
 public class UserService {
